@@ -45,11 +45,33 @@ export const Header: React.FC<HeaderProps> = ({
 
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isSearchHovered, setIsSearchHovered] = useState(false);
+  const [showRecentSearches, setShowRecentSearches] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const wishlistCount = wishlist.length;
+
+  // Load recent searches
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('shophub_recent_searches');
+      if (saved) setRecentSearches(JSON.parse(saved));
+    } catch (e) {}
+  }, []);
+
+  // Handle clicking outside of search to close recent searches
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setShowRecentSearches(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Determine current active nav based on path
   const currentPath = location.pathname;
@@ -59,12 +81,19 @@ export const Header: React.FC<HeaderProps> = ({
   const isCart = currentPath === '/cart';
 
   // Expanded if hovered, focused, or has non-empty query
-  const isSearchExpanded = isSearchHovered || isSearchFocused || searchQuery.trim().length > 0;
+  const isSearchExpanded = isSearchHovered || isSearchFocused || searchQuery.trim().length > 0 || showRecentSearches;
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+  const handleSearchSubmit = (e?: React.FormEvent, directQuery?: string) => {
+    if (e) e.preventDefault();
+    const queryToUse = directQuery !== undefined ? directQuery : searchQuery;
+    
+    if (queryToUse.trim()) {
+      const updated = [queryToUse.trim(), ...recentSearches.filter(q => q.toLowerCase() !== queryToUse.trim().toLowerCase())].slice(0, 5);
+      setRecentSearches(updated);
+      localStorage.setItem('shophub_recent_searches', JSON.stringify(updated));
+      if (directQuery !== undefined) setSearchQuery(directQuery);
+      setShowRecentSearches(false);
+      navigate(`/products?search=${encodeURIComponent(queryToUse.trim())}`);
     } else {
       navigate('/products');
     }
@@ -198,12 +227,13 @@ export const Header: React.FC<HeaderProps> = ({
             
             {/* CLEAN EXPANDING SEARCH (Icon in normal state, expands on hover/focus to 220–250px) */}
             <div 
+              ref={searchContainerRef}
               className="relative flex items-center"
               onMouseEnter={() => setIsSearchHovered(true)}
               onMouseLeave={() => setIsSearchHovered(false)}
             >
               <form 
-                onSubmit={handleSearchSubmit}
+                onSubmit={(e) => handleSearchSubmit(e)}
                 role="search"
                 className={`relative flex items-center h-10 transition-all duration-300 ease-out ${
                   isSearchExpanded 
@@ -217,6 +247,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onClick={() => {
                     if (!isSearchExpanded) {
                       setIsSearchFocused(true);
+                      setShowRecentSearches(true);
                       searchInputRef.current?.focus();
                     }
                   }}
@@ -232,8 +263,14 @@ export const Header: React.FC<HeaderProps> = ({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
+                  onFocus={() => {
+                    setIsSearchFocused(true);
+                    setShowRecentSearches(true);
+                  }}
+                  onBlur={() => {
+                    // Small timeout so click on dropdown items can register before hiding
+                    setTimeout(() => setIsSearchFocused(false), 200);
+                  }}
                   placeholder="Search products..."
                   className={`bg-transparent text-[13px] text-[#063D37] placeholder-[#798C87] outline-none tracking-tight font-medium transition-all duration-300 ${
                     isSearchExpanded 
@@ -254,6 +291,29 @@ export const Header: React.FC<HeaderProps> = ({
                   </button>
                 )}
               </form>
+
+              {/* Recent Searches Dropdown */}
+              {isSearchExpanded && showRecentSearches && recentSearches.length > 0 && (
+                <div className="absolute top-12 left-0 w-full bg-white rounded-2xl shadow-xl border border-[#D8EDE8] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="px-3 py-2 text-[11px] font-bold text-[#798C87] uppercase tracking-wider bg-[#F9FDFc] border-b border-[#EAF2F0]">
+                    Recent Searches
+                  </div>
+                  <ul>
+                    {recentSearches.map((term, index) => (
+                      <li key={index}>
+                        <button
+                          type="button"
+                          onClick={() => handleSearchSubmit(undefined, term)}
+                          className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left text-[13px] text-[#063D37] hover:bg-[#EAF8F5] hover:text-[#078F83] transition-colors cursor-pointer"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5 text-[#078F83]/70" />
+                          <span className="flex-1 truncate">{term}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             {/* Account / Login Action on the right */}
