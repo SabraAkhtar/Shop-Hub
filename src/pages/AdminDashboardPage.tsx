@@ -185,7 +185,7 @@ export const AdminDashboardPage: React.FC = () => {
                       <div className="w-full max-w-[40px] bg-[#EAF2F0] rounded-t-lg relative overflow-hidden h-[200px]">
                         <div 
                           className={`absolute bottom-0 left-0 right-0 rounded-t-lg transition-all duration-1000 ${isMax ? 'bg-[#063D37]' : 'bg-[#078F83]'}`}
-                          style={{ height: \`\${heightPercent}%\` }}
+                          style={{ height: `${heightPercent}%` }}
                         ></div>
                       </div>
                       <div className="text-[12px] font-semibold text-gray-500 mt-3">{d.day}</div>
