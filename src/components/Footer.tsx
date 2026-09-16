@@ -336,6 +336,12 @@ export const Footer: React.FC = () => {
                       Account
                     </Link>
                   </li>
+                  <li className="pt-2">
+                    <Link to="/admin" className="inline-flex items-center gap-1.5 text-[#078F83] font-bold hover:text-[#063D37] hover:translate-x-1 transition-all">
+                      <div className="w-2 h-2 rounded-full bg-[#078F83] animate-pulse"></div> 
+                      Admin Panel
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </div>
