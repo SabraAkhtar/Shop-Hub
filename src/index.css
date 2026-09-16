@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/* =========================================================
+   KEYFRAMES
+   ========================================================= */
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-150%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(-12deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* =========================================================
+   UTILITY: NO SCROLLBAR
+   Used in CategorySection, NewArrivalsSection, etc.
+   ========================================================= */
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE 10+ */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
+}
+
+/* =========================================================
+   UTILITY: ANIMATIONS
+   Used in toast notifications, newsletter success, dropdowns
+   ========================================================= */
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out both;
+}
+
+/* Tailwind-style animate-in utility (used with fade-in, slide-in-from-top-2) */
+.animate-in {
+  animation-duration: 200ms;
+  animation-fill-mode: both;
+}
+
+.fade-in {
+  animation-name: fadeIn;
+}
+
+.slide-in-from-top-2 {
+  animation-name: slideInFromTop;
+}
+
+/* =========================================================
+   UTILITY: SCALE
+   Used in ProductDetailsPage thumbnail selection
+   ========================================================= */
+
+.scale-102 {
+  transform: scale(1.02);
+}

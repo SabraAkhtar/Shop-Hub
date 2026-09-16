@@ -1,0 +1,38 @@
+.specular-card {
+  --sc-radius: 28px;
+  position: relative;
+  border-radius: var(--sc-radius);
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+/* Canvas extends past the button so the rim glow can bleed outside the edge */
+.specular-card__fx {
+  position: absolute;
+  inset: -20px;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+.specular-card:hover .specular-card__fx {
+  opacity: 1;
+}
+
+/* We want the specular glow to trace the *outer* edge, so it should sit above the background but not block clicks */
+.specular-card__fx canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.specular-card__content {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--sc-radius);
+  overflow: hidden;
+}

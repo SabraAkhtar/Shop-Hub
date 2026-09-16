@@ -1,0 +1,6 @@
+{
+  "name": "ShopHub - Modern Electronics",
+  "description": "Premium electronics and technology store featuring high-fidelity hero section, category explorer, featured products, and smart digital life showcase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
